@@ -5,11 +5,11 @@ import (
 )
 
 type UserService interface {
-	CreateUser(user entitie.User) error
-	LoginUser(email, password string) (entitie.User, error)
+	CreateUser(userForm entitie.UserForm) (*entitie.User, error)
+	FindUserByEmail(email string) (*entitie.User, error)
 }
 
 type UserRepository interface {
-	CreateUser(user entitie.User) error
-	LoginUser(email, password string) (entitie.User, error)
+	CreateUser(userForm entitie.UserForm) (*entitie.User, error)
+	FindUserByEmail(email string) (*entitie.User, error)
 }

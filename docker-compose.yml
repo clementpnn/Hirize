@@ -11,3 +11,12 @@ services:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: root
       POSTGRES_DB: hirize
+  
+  redis:
+    container_name: redis
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    restart: always
+    environment:
+      REDIS_PASSWORD: mysecretpassword

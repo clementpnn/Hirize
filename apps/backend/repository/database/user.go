@@ -3,35 +3,43 @@ package repository
 import (
 	"backend/domain/entitie"
 	"backend/domain/port"
-	"database/sql"
+
+	"github.com/jmoiron/sqlx"
 )
 
-func NewUserRepository(db *sql.DB) port.UserRepository {
+func NewUserRepository(db *sqlx.DB) port.UserRepository {
 	return &Repository{
 		db,
 	}
 }
 
-func (r *Repository) CreateUser(user entitie.User) error {
-	stmt, err := r.db.Prepare("INSERT INTO users (email, password) VALUES ($1, $2)")
+func (r *Repository) CreateUser(userForm entitie.UserForm) (*entitie.User, error) {
+	stmt, err := r.db.Preparex("INSERT INTO users (email, password) VALUES ($1, $2) RETURNING id, email, password")
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(user.Email, user.Password)
+	user := &entitie.User{}
+	err = stmt.QueryRowx(userForm.Email, userForm.Password).StructScan(user)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return user, nil
 }
 
-func (r *Repository) LoginUser(email string, password string) (entitie.User, error) {
-	var user entitie.User
-	err := r.db.QueryRow("SELECT * FROM users WHERE email = $1 AND password = $2", email, password).Scan(&user.Email, &user.Password)
+func (r *Repository) FindUserByEmail(email string) (*entitie.User, error) {
+	stmt, err := r.db.Preparex("SELECT id, email, password FROM users WHERE email = $1")
 	if err != nil {
-		return user, err
+		return nil, err
+	}
+	defer stmt.Close()
+
+	user := &entitie.User{}
+	err = stmt.QueryRowx(email).StructScan(user)
+	if err != nil {
+		return nil, err
 	}
 
 	return user, nil

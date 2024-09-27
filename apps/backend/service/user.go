@@ -15,10 +15,10 @@ func NewUserService(userRepository port.UserRepository) *UserService {
 	}
 }
 
-func (s *UserService) CreateUser(user entitie.User) error {
-	return s.userRepository.CreateUser(user)
+func (s *UserService) CreateUser(userForm entitie.UserForm) (*entitie.User, error) {
+	return s.userRepository.CreateUser(userForm)
 }
 
-func (s *UserService) LoginUser(email string, password string) (entitie.User, error) {
-	return s.userRepository.LoginUser(email, password)
+func (s *UserService) FindUserByEmail(email string) (*entitie.User, error) {
+	return s.userRepository.FindUserByEmail(email)
 }

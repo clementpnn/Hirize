@@ -1,14 +1,14 @@
 package config
 
 import (
-	"database/sql"
 	"fmt"
 	"os"
 
+	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 )
 
-func OpenDB() (*sql.DB, error) {
+func InitDB() *sqlx.DB {
 	dbHost := os.Getenv("DB_HOST")
 	dbPort := os.Getenv("DB_PORT")
 	dbUser := os.Getenv("DB_USER")
@@ -18,14 +18,14 @@ func OpenDB() (*sql.DB, error) {
 	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		dbHost, dbPort, dbUser, dbPassword, dbName)
 
-	db, err := sql.Open("postgres", connStr)
+	db, err := sqlx.Open("postgres", connStr)
 	if err != nil {
-		return nil, fmt.Errorf("could not open database connection: %w", err)
+		panic(fmt.Errorf("could not open database connection: %w", err))
 	}
 
 	if err := db.Ping(); err != nil {
-		return nil, fmt.Errorf("could not ping database: %w", err)
+		panic(fmt.Errorf("could not ping database: %w", err))
 	}
 
-	return db, nil
+	return db
 }
