@@ -21,17 +21,21 @@ export default function Signin() {
   const { mutate: signinMutate, isPending: isSignInPending } = useMutation({
     mutationFn: UserService.create,
     onSuccess: () => navigate({ to: "/" }),
-    onError: () => alert("Error")
+    onError: (response) => alert(`${response?.message}`)
   })
 
   const { mutate: signupMutate, isPending: isSignUpPending } = useMutation({
     mutationFn: UserService.create,
     onSuccess: () => navigate({ to: "/" }),
-    onError: (error: any) => alert(error.response?.data?.message || "Unknown error occurred")
+    onError: (error) => alert(error || "Unknown error occurred")
   })
 
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema)
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+      password: ""
+    }
   })
 
   return (
