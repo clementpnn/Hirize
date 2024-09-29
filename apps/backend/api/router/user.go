@@ -18,4 +18,5 @@ func User(app *fiber.App, db *sqlx.DB) {
 
 	user.Post("/create", userHandler.CreateUser)
 	user.Post("/login", userHandler.LoginUser)
+	user.Get("/check-session", userHandler.CheckSession)
 }
