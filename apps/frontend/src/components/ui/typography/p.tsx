@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils"
+import { cn } from "@/libs/utils"
 
 export function P({ children, className }: { children: React.ReactNode, className?: string }) {
   return (
