@@ -1,13 +1,4 @@
-type APIResponse<T> = SuccessResponse<T> | ErrorResponse
-
-type DefaultResponse = {
+interface APIResponse<T> {
   message: string
-}
-
-type SuccessResponse<T> = DefaultResponse & {
   data: T
-}
-
-type ErrorResponse = DefaultResponse & {
-  error: string
 }
