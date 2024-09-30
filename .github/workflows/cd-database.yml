@@ -39,7 +39,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             migrate -path "${{ env.MIGRATIONS_FOLDER }}" \
-                    -database "${{secrets.DATABASE}}" up
+                    -database "${{ secrets.DATABASE }}" up
 
       - name: Delete migration files from server
         uses: appleboy/ssh-action@master
