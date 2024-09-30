@@ -1,0 +1,51 @@
+name: CD Database Migrations
+
+on:
+  push:
+    paths:
+      - "database/migrations/**"
+    branches:
+      - main
+
+env:
+  MIGRATIONS_FOLDER: "./database/migrations"
+
+jobs:
+  migrate:
+    name: Apply Database Migrations
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy migrations to server
+        uses: appleboy/scp-action@v0.1.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          source: "${{ env.MIGRATIONS_FOLDER }}/*"
+          target: ${{ env.MIGRATIONS_FOLDER }}
+
+      - name: Execute migrations on server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            migrate -path "${{ env.MIGRATIONS_FOLDER }}" \
+                    -database "${{secrets.DATABASE}}" up
+
+      - name: Delete migration files from server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            rm -rf ${{ env.MIGRATIONS_FOLDER }}/*
